@@ -13,6 +13,7 @@ public class Faccio implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "faccio_id")
     private Long faccioId;
 
     @Column(length = 15, nullable = false)
@@ -21,7 +22,8 @@ public class Faccio implements Serializable {
     @Column(length = 500)
     private String resum;
 
-    // TO DO
+    @OneToMany(mappedBy = "faccio", cascade = CascadeType.ALL, 
+               fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Personatge> personatges = new HashSet<>();
 
     // Constructors

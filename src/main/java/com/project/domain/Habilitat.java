@@ -13,6 +13,7 @@ public class Habilitat implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "habilitat_id")
     private Long habilitatId;
 
     @Column(length = 20, nullable = false)
@@ -24,7 +25,10 @@ public class Habilitat implements Serializable {
     @Column(nullable = false)
     private Integer costEstamina;
 
-    // TO DO
+    @ManyToMany(
+        mappedBy = "habilitats",
+        fetch = FetchType.LAZY
+    )
     private Set<Personatge> personatges = new HashSet<>();
 
     // Constructors

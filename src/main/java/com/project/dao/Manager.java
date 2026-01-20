@@ -102,13 +102,22 @@ public class Manager {
      * Crea una nova habilitat
      */
     public static Habilitat addHabilitat(String nom, String descripcio, Integer cost) {
-        Session session = null;
         Transaction tx = null;
         Habilitat habilitat = null;
        
-        // -----
-        // TO DO
-        // -----
+        try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            try {
+                habilitat = new Habilitat(nom, descripcio, cost); // creem l'objecte de l'habilitat
+                session.persist(habilitat);
+                System.out.println("[OK] Habilitat creada: " + habilitat.getNom() + " (cost: " + habilitat.getCostEstamina() + ")");
+                tx.commit();
+            } catch (Exception e) {
+                if (tx != null && tx.isActive()) tx.rollback();
+                throw e;
+            }
+        }
+
 
         return habilitat;
     }
@@ -138,12 +147,29 @@ public class Manager {
      */
     public static Personatge addPersonatge(String nom, Double atac, Double defensa, 
                                           Faccio faccio, Habilitat... habilitats) {
-        Session session = null;
         Transaction tx = null;
         Personatge personatge = null;
-        // -----
-        // TO DO
-        // -----
+        
+         try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            try {
+                personatge = new Personatge(nom, atac, defensa, faccio); // creem el personatge
+                session.persist(personatge);
+
+                // afegim cada habilitat al personatge
+                for (Habilitat h : habilitats) {
+                    // System.out.println("--------- Habilidad: "+ h.getNom());
+                    personatge.addHabilitat(h);
+                }
+                
+                System.out.println("[OK] Personatge creat: " + personatge.getNom() + " (" + personatge.getFaccio().getNom() + ")");
+                tx.commit();
+            } catch (Exception e) {
+                if (tx != null && tx.isActive()) tx.rollback();
+                throw e;
+            }
+        }
+
         return personatge;
     }
 
@@ -199,8 +225,31 @@ public class Manager {
      * Mostra tots els personatges
      */
     public static void printPersonatges() {
-        // -----
-        // TO DO
-        // -----
+        Session session = null;
+        
+        try {
+            session = factory.openSession();
+            var personatges = session.createQuery("FROM Personatge", Personatge.class).list();
+            
+            System.out.println("\nPERSONATGES:");
+            for (Personatge p : personatges) {
+                String habilitats = "";
+
+                // per cada habilitat fiquem el nom a un string amb les habilitats
+                for (Habilitat h : p.getHabilitats())
+                    habilitats += h.getNom() + " ";
+
+                // si no té habilitats ho indiquem
+                habilitats = habilitats.isEmpty() ? "Sense habilitats" : habilitats;
+
+                System.out.println("\n  " + p.getNom() + "(" + p.getFaccio().getNom() + ")");
+                System.out.println("    Atac: " + p.getAtac() + " | Defensa:" + p.getDefensa());
+                System.out.println("    Habilitats: " + habilitats);
+            }
+        } catch (Exception e) {
+            System.err.println("Error llegint personatges: " + e.getMessage());
+        } finally {
+            if (session != null) session.close();
+        }
     }
 }

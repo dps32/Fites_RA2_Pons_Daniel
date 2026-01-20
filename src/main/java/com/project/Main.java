@@ -38,7 +38,7 @@ public class Main {
             "Guerrers orientals amb espases katana"
         );
 
-        /*
+        
         // =================================================================
         // 2. CREAR HABILITATS
         // =================================================================
@@ -78,7 +78,7 @@ public class Main {
             samurais,   // facció
             guardBreak  // habilitats
         );
-        */
+        
        
         // =================================================================
         // 4. MOSTRAR RESULTATS

@@ -13,6 +13,7 @@ public class Personatge implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "personatge_id")
     private Long personatgeId;
 
     @Column(length = 15, nullable = false)
@@ -24,10 +25,19 @@ public class Personatge implements Serializable {
     @Column(nullable = false)
     private Double defensa;
 
-    // TO DO
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "faccio_id")
     private Faccio faccio;
 
-    // TO DO
+    @ManyToMany(
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+        fetch = FetchType.LAZY
+    )
+    @JoinTable(
+        name = "personatge_habilitat",
+        joinColumns = @JoinColumn(name = "personatge_id"),
+        inverseJoinColumns = @JoinColumn(name = "habilitat_id")
+    )
     private Set<Habilitat> habilitats = new HashSet<>();
 
     // Constructors
